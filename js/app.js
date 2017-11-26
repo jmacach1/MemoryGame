@@ -2,13 +2,10 @@
 let cardsArray = [
     'diamond', 'paper-plane-o', 'anchor', 'bolt', 'cube', 'bicycle', 'bomb', 'leaf'
 ]
-cardsArray.concat(cardsArray);
+cardsArray = cardsArray.concat(cardsArray);
 
 // firstCard - Variable keeps track if player is choosing first card or second card
 let firstCard = true;
-
-// prev - Holding variable for the first Card that was chosen
-let prev;
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -32,14 +29,35 @@ function flipCard(card) {
     card.classList.add('open', 'show');
 }
 
-// Set the cards(current and previous li.card's) to show they match, change class="card match" 
-function matchFound(card, prev) {
-    card.className = 'card match';
-    prev.className = 'card match';
+// Fn to reset. Delete previous cards, shuffle cards array, build new html.
+function resetGame(cards) {
+    //Remove cards
+    $('li.card').remove();
+
+    //shuffle Cards
+    cards = shuffle(cards);
+
+    //Build the shuffled deck in HTML for ul.deck to append
+    for (i = 0; i < cards.length; i++) {
+        strng = '<li class="card"> <i class="fa fa-' + cards[i] + '"> </i> </li>';
+        $('.deck').append(strng);
+    }
+
 }
+
+// // Set the cards(current and previous li.card's) to show they match, change class="card match" 
+// function matchFound(card, prev) {
+//     card.className = 'card match';
+//     prev.className = 'card match';
+// }
 
 // run js once the page is ready
 $(document).ready(function() {
+    //OnClickLister for Reset Button
+    $('div.restart').on('click', function() {
+        resetGame(cardsArray);
+    });
+
     // OnClick listener for li w/ class=card
     $('li.card').on('click', function() {
         //If player is choosing the firstCard, then flip the card, set 'this' = prev, set firstCard = false
