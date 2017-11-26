@@ -7,6 +7,10 @@ cardsArray = cardsArray.concat(cardsArray);
 // firstCard - Variable keeps track if player is choosing first card or second card
 let firstCard = true;
 
+// openMatched Array - Holding array for all the cards opened/matched
+let openMatched = [];
+
+
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
     var currentIndex = array.length,
@@ -41,48 +45,40 @@ function resetGame(cards) {
     for (i = 0; i < cards.length; i++) {
         strng = '<li class="card"> <i class="fa fa-' + cards[i] + '"> </i> </li>';
         $('.deck').append(strng);
-    }
 
+        // Add Click functionality to each card in the deck
+        setCardClick();
+    }
 }
 
-// // Set the cards(current and previous li.card's) to show they match, change class="card match" 
-// function matchFound(card, prev) {
-//     card.className = 'card match';
-//     prev.className = 'card match';
-// }
+// getGlyph receives a Card, returns the glyph of that card
+function getGlyph(card) {
+    // Get the glyph of this particular card
+    glyph = card.innerHTML.split('"')[1].substring(6);
+    //console.log()
+    return glyph;
+}
+
+// setCardClick Fn Sets the OnClick listener for the cards
+function setCardClick() {
+    // OnClick listener for li w/ class=card
+    $('li.card').on('click', function() {
+        // Flip this card
+        flipCard(this);
+        openMatched.push(getGlyph(this));
+    });
+}
 
 // run js once the page is ready
 $(document).ready(function() {
+    resetGame(cardsArray);
+
     //OnClickLister for Reset Button
     $('div.restart').on('click', function() {
         resetGame(cardsArray);
     });
-
-    // OnClick listener for li w/ class=card
-    $('li.card').on('click', function() {
-        //If player is choosing the firstCard, then flip the card, set 'this' = prev, set firstCard = false
-        if (firstCard) {
-            flipCard(this);
-            prev = this;
-            firstCard = false;
-        } else {
-            flipCard(this);
-            // See if the cards match 
-
-            // We found a match! Set firstCard = true; prev = null
-            matchFound(this, prev);
-            firstCard = true;
-            prev = null;
-        }
-    });
 });
 
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
 
 /*
  * set up the event listener for a card. If a card is clicked:
