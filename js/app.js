@@ -1,15 +1,23 @@
+/*
+ *  VARIABLES
+ */
 // cardsArray holds the list of cards
 let cardsArray = [
-    'diamond', 'paper-plane-o', 'anchor', 'bolt', 'cube', 'bicycle', 'bomb', 'leaf'
-]
+        'diamond', 'paper-plane-o', 'anchor', 'bolt', 'cube', 'bicycle', 'bomb', 'leaf'
+    ]
+    // Doubles the array to have matching cards
 cardsArray = cardsArray.concat(cardsArray);
 
 // firstCard - Variable keeps track if player is choosing first card or second card
 let firstCard = true;
 
-// openMatched Array - Holding array for all the cards opened/matched
+// openMatched Array - Array for holding the opened cards to be matched
 let openMatched = [];
 
+
+/*
+ *  FUNCTIONS
+ */
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -62,21 +70,29 @@ function getGlyph(card) {
 // setCardClick Fn Sets the OnClick listener for the cards
 function setCardClick() {
     // OnClick listener for li w/ class=card
-    $('li.card').on('click', function() {
+    $('li.card').on('click', function(event) {
         // Flip this card
         flipCard(this);
         openMatched.push(getGlyph(this));
+        // Stops the function from firing multiple times
+        event.stopImmediatePropagation();
     });
 }
 
-// run js once the page is ready
+/*
+ *  RUN JAVASCRIPT
+ */
+
+// run js once DOM is ready
 $(document).ready(function() {
+    // Reset the Game (shuffle cards)
     resetGame(cardsArray);
 
     //OnClickLister for Reset Button
     $('div.restart').on('click', function() {
         resetGame(cardsArray);
     });
+
 });
 
 
