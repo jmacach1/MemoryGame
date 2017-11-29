@@ -53,13 +53,13 @@ function resetGame(cards) {
     for (i = 0; i < cards.length; i++) {
         strng = '<li class="card"> <i class="fa fa-' + cards[i] + '"> </i> </li>';
         $('.deck').append(strng);
-
         // Add Click functionality to each card in the deck
         setCardClick();
     }
 }
 
 // getGlyph receives a Card, returns the glyph of that card
+// Used in setCardClick fn
 function getGlyph(card) {
     // Get the glyph of this particular card
     glyph = card.innerHTML.split('"')[1].substring(6);
@@ -67,15 +67,43 @@ function getGlyph(card) {
     return glyph;
 }
 
+// Used in setCardClick to check if a card is closed or not.
+function checkIfClosed(card) {
+    if (card.classList == "card") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// function matchCards() {
+//     if (openMatched[0] == openMatched[1]) {} else {}
+// }
+
+
 // setCardClick Fn Sets the OnClick listener for the cards
+// Called when Game starts and restarts
 function setCardClick() {
     // OnClick listener for li w/ class=card
     $('li.card').on('click', function(event) {
-        // Flip this card
-        flipCard(this);
-        openMatched.push(getGlyph(this));
         // Stops the function from firing multiple times
         event.stopImmediatePropagation();
+        //If the card is closed, flip it. If not Do nothing
+        if (checkIfClosed(this)) {
+            // Flip this card
+            flipCard(this);
+            // Add this card to the openMatched Array.
+            openMatched.push(getGlyph(this));
+            // If openMatched has 2 Cards in it, then Match those cards with matchCards fn
+            // Matched or Not. Remove both cards from openMatched.
+            if (openMatched.length == 2) {
+                //matchCards();
+            }
+
+        } else {
+            console.log("Hey this is open already")
+        }
+
     });
 }
 
@@ -98,8 +126,8 @@ $(document).ready(function() {
 
 /*
  * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
+ *  Check- display the card's symbol (put this functionality in another function that you call from this one)
+ *  Check- add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
  *  - if the list already has another card, check to see if the two cards match
  *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
  *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
