@@ -59,7 +59,7 @@ function resetGame(cards) {
 }
 
 // getGlyph receives a Card, returns the glyph of that card
-// Used in setCardClick fn
+// Used in matchCard function
 function getGlyph(card) {
     // Get the glyph of this particular card
     glyph = card.innerHTML.split('"')[1].substring(6);
@@ -76,9 +76,29 @@ function checkIfClosed(card) {
     }
 }
 
-// function matchCards() {
-//     if (openMatched[0] == openMatched[1]) {} else {}
-// }
+function lockCards(card) {
+    // Remove "open show" classes, add match class to the Card elements
+    card.className = "card match";
+}
+
+function closeCards(card) {
+    // Close the card that was just opened
+    card.className = "card";
+}
+
+function matchCards() {
+    // Check to see if the 2 cards glyph's Match
+    if (getGlyph(openMatched[0]) == getGlyph(openMatched[1])) {
+        lockCards(openMatched[0]);
+        lockCards(openMatched[1]);
+    } else {
+        setTimeout(closeCards(openMatched[0]), 10000);
+        setTimeout(closeCards(openMatched[1]), 3000);
+    }
+    // Remove both cards from openMatched Array
+    openMatched.pop();
+    openMatched.pop();
+}
 
 
 // setCardClick Fn Sets the OnClick listener for the cards
@@ -93,17 +113,14 @@ function setCardClick() {
             // Flip this card
             flipCard(this);
             // Add this card to the openMatched Array.
-            openMatched.push(getGlyph(this));
+            openMatched.push(this);
             // If openMatched has 2 Cards in it, then Match those cards with matchCards fn
             // Matched or Not. Remove both cards from openMatched.
             if (openMatched.length == 2) {
-                //matchCards();
+                matchCards();
             }
 
-        } else {
-            console.log("Hey this is open already")
         }
-
     });
 }
 
@@ -125,12 +142,6 @@ $(document).ready(function() {
 
 
 /*
- * set up the event listener for a card. If a card is clicked:
- *  Check- display the card's symbol (put this functionality in another function that you call from this one)
- *  Check- add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
