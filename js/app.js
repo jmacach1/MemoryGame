@@ -14,6 +14,8 @@ let firstCard = true;
 // openMatched Array - Array for holding the opened cards to be matched
 let openMatched = [];
 
+let moves = 0;
+
 
 /*
  *  FUNCTIONS
@@ -35,6 +37,10 @@ function shuffle(array) {
     return array;
 }
 
+function countMoves(moves) {
+    $('span.moves').text(moves);
+}
+
 
 // Flip the card (li.card) to show it by adding open and show to its class
 function flipCard(card) {
@@ -43,6 +49,8 @@ function flipCard(card) {
 
 // Fn to reset. Delete previous cards, shuffle cards array, build new html.
 function resetGame(cards) {
+    moves = 0;
+    countMoves(moves);
     //Remove cards
     $('li.card').remove();
 
@@ -86,20 +94,32 @@ function closeCards(card) {
     card.className = "card";
 }
 
+function close(cards) {
+    closeCards(cards[0]);
+    closeCards(cards[1]);
+}
+
 function matchCards() {
     // Check to see if the 2 cards glyph's Match
     if (getGlyph(openMatched[0]) == getGlyph(openMatched[1])) {
+        // Match = Lock cards in place, change class to "card match"
         lockCards(openMatched[0]);
         lockCards(openMatched[1]);
     } else {
-        setTimeout(closeCards(openMatched[0]), 10000);
-        setTimeout(closeCards(openMatched[1]), 3000);
+        // Delay closing the cards with set timeout.
+        // Turn off the click listeners for the Cards while the 2 are showing.
+        //$("li.card").off('click');
+        $("li.card").css("pointer-events", "none");
+        setTimeout(closeCards, 2000, openMatched[0]);
+        setTimeout(closeCards, 2000, openMatched[1]);
+        setTimeout(function() {
+            $("li.card").css("pointer-events", "auto");
+        }, 2000);
     }
     // Remove both cards from openMatched Array
     openMatched.pop();
     openMatched.pop();
 }
-
 
 // setCardClick Fn Sets the OnClick listener for the cards
 // Called when Game starts and restarts
@@ -119,8 +139,10 @@ function setCardClick() {
             if (openMatched.length == 2) {
                 matchCards();
             }
-
         }
+        // Update the moves counter
+        moves++;
+        countMoves(moves);
     });
 }
 
