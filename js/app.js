@@ -38,7 +38,29 @@ function shuffle(array) {
 }
 
 function countMoves(moves) {
+    // Show the number of moves 
     $('span.moves').text(moves);
+}
+
+function stars(moves) {
+    // Update the moves for the star counter
+    if (moves < 15) {
+        $('.stars').empty();
+        strng = '<li><i class="fa fa-star"></i></li>' +
+            '<li><i class = "fa fa-star"></i></li >' +
+            '<li><i class = "fa fa-star"> </i></li>';
+        $('.stars').append(strng);
+    } else if (15 < moves && moves < 20) {
+        $('.stars').empty();
+        strng = '<li><i class="fa fa-star"></i></li>' +
+            '<li><i class="fa fa-star"></i></li>';
+        $('.stars').append(strng);
+    } else if (moves > 20) {
+        $('.stars').empty();
+        strng = '<li><i class="fa fa-star"></i></li>';
+        $('.stars').append(strng);
+
+    }
 }
 
 
@@ -51,8 +73,10 @@ function flipCard(card) {
 function resetGame(cards) {
     moves = 0;
     countMoves(moves);
-    //Remove cards
-    $('li.card').remove();
+    //Reset stars
+    stars(moves);
+    //Remove cards and everything on the deck
+    $('.deck').empty();
 
     //shuffle Cards
     cards = shuffle(cards);
@@ -105,16 +129,19 @@ function matchCards() {
         // Match = Lock cards in place, change class to "card match"
         lockCards(openMatched[0]);
         lockCards(openMatched[1]);
+        //Check to see if the player has won
+        hasPlayerWon();
     } else {
-        // Delay closing the cards with set timeout.
+        // Delay closing the cards with setTimeout.
         // Turn off the click listeners for the Cards while the 2 are showing.
-        //$("li.card").off('click');
         $("li.card").css("pointer-events", "none");
-        setTimeout(closeCards, 2000, openMatched[0]);
-        setTimeout(closeCards, 2000, openMatched[1]);
+        setTimeout(closeCards, 1500, openMatched[0]);
+        setTimeout(closeCards, 1500, openMatched[1]);
+        // Reestablish pointer function for the Cards after the 2 flipped back 
         setTimeout(function() {
             $("li.card").css("pointer-events", "auto");
         }, 2000);
+
     }
     // Remove both cards from openMatched Array
     openMatched.pop();
@@ -134,17 +161,41 @@ function setCardClick() {
             flipCard(this);
             // Add this card to the openMatched Array.
             openMatched.push(this);
-            // If openMatched has 2 Cards in it, then Match those cards with matchCards fn
+            // Update the moves counter. If openMatched has 2 Cards, then Match them with matchCards fn
             // Matched or Not. Remove both cards from openMatched.
             if (openMatched.length == 2) {
+                moves++;
+                countMoves(moves);
                 matchCards();
+                stars(moves);
             }
         }
-        // Update the moves counter
-        moves++;
-        countMoves(moves);
     });
 }
+
+// Check to see if player won.
+function hasPlayerWon() {
+    matched = 0;
+    $('li.card').each(function(index, element) {
+        if (element.classList.contains("match")) {
+            matched++;
+        }
+        if (matched == 16) {
+            setTimeout(function() {
+                // If Player won, then remove the cards. 
+                // Tell the player they won
+                $('li.card').remove();
+                $('.deck').append("<h1> CONGRATULATIONS! YOU WON</h1> <br> <h2 class='reset'><u>PLAY AGAIN</u></h2>");
+                $('.deck .reset').on('click', function() { resetGame(cardsArray); });
+            }, 2000);
+        }
+
+
+    });
+}
+
+
+
 
 /*
  *  RUN JAVASCRIPT
@@ -161,9 +212,3 @@ $(document).ready(function() {
     });
 
 });
-
-
-/*
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
