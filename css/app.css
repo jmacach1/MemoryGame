@@ -17,7 +17,8 @@ body {
 }
 
 body {
-    background: #ffffff url('../img/geometry2.png'); /* Background pattern from Subtle Patterns */
+    background: #ffffff url('../img/geometry2.png');
+    /* Background pattern from Subtle Patterns */
     font-family: 'Coda', cursive;
 }
 
@@ -32,6 +33,7 @@ h1 {
     font-family: 'Open Sans', sans-serif;
     font-weight: 300;
 }
+
 
 /*
  * Styles for the deck of cards
@@ -81,6 +83,7 @@ h1 {
     font-size: 33px;
 }
 
+
 /*
  * Styles for the Score Panel
  */
@@ -89,6 +92,7 @@ h1 {
     text-align: left;
     width: 345px;
     margin-bottom: 10px;
+    display: inline-block;
 }
 
 .score-panel .stars {
@@ -106,4 +110,36 @@ h1 {
 .score-panel .restart {
     float: right;
     cursor: pointer;
+}
+
+
+/*
+ * Styles for the Timer
+ */
+
+.timer {
+    width: 35%;
+}
+
+
+/*
+ * Styles for Smaller Screens
+ */
+
+@media screen and (max-width: 630px) {
+    .deck {
+        width: 100%;
+        height: 100vw;
+        min-height: 400px;
+        padding: 16px;
+        align-items: flex-start;
+    }
+    .deck .card {
+        width: 22%;
+        height: 20vw;
+        min-height: 50px;
+    }
+    .score-panel {
+        width: 80%;
+    }
 }

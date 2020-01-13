@@ -14,7 +14,11 @@ let firstCard = true;
 // openMatched Array - Array for holding the opened cards to be matched
 let openMatched = [];
 
+// Record number of moves
 let moves = 0;
+
+// Used to take the ID of setInterval function in the runTimer fn. To stop it later.
+let intervalID;
 
 
 /*
@@ -43,7 +47,8 @@ function countMoves(moves) {
 }
 
 function stars(moves) {
-    // Update the moves for the star counter
+    // Update the moves for the star counter. Less than 15 = 3 stars
+    // 15 - 20, 2 stars. Over 20, 1 star
     if (moves < 15) {
         $('.stars').empty();
         strng = '<li><i class="fa fa-star"></i></li>' +
@@ -71,9 +76,10 @@ function flipCard(card) {
 
 // Fn to reset. Delete previous cards, shuffle cards array, build new html.
 function resetGame(cards) {
+    // Reset moves counter
     moves = 0;
     countMoves(moves);
-    //Reset stars
+    //Reset stars rating
     stars(moves);
     //Remove cards and everything on the deck
     $('.deck').empty();
@@ -87,6 +93,9 @@ function resetGame(cards) {
         $('.deck').append(strng);
         // Add Click functionality to each card in the deck
         setCardClick();
+        // Stop timer. Set it to Zero
+        clearInterval(intervalID);
+        setTimertoZero();
     }
 }
 
@@ -148,6 +157,12 @@ function matchCards() {
     openMatched.pop();
 }
 
+function setGameStart() {
+    // Clear the last timer. Start a new one.
+    clearInterval(intervalID);
+    runTimer();
+}
+
 // setCardClick Fn Sets the OnClick listener for the cards
 // Called when Game starts and restarts
 function setCardClick() {
@@ -155,19 +170,23 @@ function setCardClick() {
     $('li.card').on('click', function(event) {
         // Stops the function from firing multiple times
         event.stopImmediatePropagation();
+        if (moves == 0) {
+            setGameStart();
+        }
+        moves++;
         //If the card is closed, flip it. If not Do nothing
         if (checkIfClosed(this)) {
             // Flip this card
             flipCard(this);
             // Add this card to the openMatched Array.
             openMatched.push(this);
-            // Update the moves counter. If openMatched has 2 Cards, then Match them with matchCards fn
+            // Update the moves counter, Star rating. If openMatched has 2 Cards, Match them with matchCards fn
             // Matched or Not. Remove both cards from openMatched.
             if (openMatched.length == 2) {
-                moves++;
-                countMoves(moves);
+                let move = moves / 2;
+                countMoves(move);
                 matchCards();
-                stars(moves);
+                stars(move);
             }
         }
     });
@@ -183,18 +202,52 @@ function hasPlayerWon() {
         if (matched == 16) {
             setTimeout(function() {
                 // If Player won, then remove the cards. 
-                // Tell the player they won
+                // Tell the player they won. Star rating. Time. and Play Again
                 $('li.card').remove();
-                $('.deck').append("<h1> CONGRATULATIONS! YOU WON</h1> <br> <h2 class='reset'><u>PLAY AGAIN</u></h2>");
+                star = $('.stars').html();
+                $('.deck').append("<div><h1> CONGRATULATIONS YOU WON!</h1> <br> " +
+                    "<h2>Time: " + stopTimer() +
+                    "</h2><br><h2>Number of Moves: " + moves +
+                    "</h2><h2 class='starRating'> <br> Star Rating: " + star +
+                    "<h2 class='reset'><br><u>PLAY AGAIN</u></h2></div>");
                 $('.deck .reset').on('click', function() { resetGame(cardsArray); });
+                $('.starRating li').css("list-style", "none")
+                $('.starRating li').css("display", "inline-block")
             }, 2000);
         }
-
-
     });
 }
 
+function setTimertoZero() {
+    // Sets the Timer to display Zero.
+    $('div.timer').empty();
+    $('div.timer').append('<h4>Time: <span id="minutes">00</span> : <span id="seconds">00</span></h4>');
+}
 
+function runTimer() {
+    // Run Timer in seconds and minutes
+    setTimertoZero();
+    var sec = 0;
+
+    function pad(val) { return val > 9 ? val : "0" + val; }
+    intervalID = setInterval(function() {
+        $("#seconds").html(pad(++sec % 60));
+        $("#minutes").html(pad(parseInt(sec / 60, 10)));
+    }, 1000);
+}
+
+function stopTimer() {
+    // stop the Timer and have the time when it stopped displayed
+    var seconds = $("#seconds").html();
+    var minutes = $("#minutes").html();
+    // stop the setInterval function
+    clearInterval(intervalID);
+    // Display the time
+    $('div.timer').append('<h4>Time: <span id="minutes">00</span> : <span id="seconds">00</span></h4>');
+    $('div.timer').empty();
+    $('div.timer').append('<h4>Time: <span id="min">' + minutes + '</span> : <span id="se">' + seconds + '</span></h4>');
+    return minutes + " : " + seconds;
+}
 
 
 /*
